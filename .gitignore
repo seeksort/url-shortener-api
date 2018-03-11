@@ -3,3 +3,5 @@ venv
 *.pyc
 .vscode
 config.py
+app.db
+notes.txt
