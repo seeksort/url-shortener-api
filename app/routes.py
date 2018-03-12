@@ -1,11 +1,17 @@
 from app import urlapp, db
-from flask import jsonify
+from flask import jsonify, request, redirect
 from app.models import UrlMap
 import re
 
 def send_err():
     error = {
         'error': 'Wrong url format, make sure you have a valid protocol and real site.'
+        }
+    return jsonify(error)
+
+def send_bad_short_url_err():
+    error = {
+        'error': 'This url is not in the database.'
         }
     return jsonify(error)
 
@@ -26,6 +32,9 @@ def validate_url(url_protocol, url_parts):
 
 def db_find_url(url_parts):
     return db.session.query(UrlMap).filter(UrlMap.url_no_protocol == url_parts).first()
+
+def db_find_short_url(short_url):
+    return db.session.query(UrlMap).filter(UrlMap.short_url_id == short_url).first()
 
 def shorten_url(url):
     # lookup last in db
@@ -49,6 +58,14 @@ def bad_url(error):
 @urlapp.route('/')
 def root():
     return "Welcome to url shortener!"
+
+@urlapp.route('/<short_url>')
+def handle_short_url(short_url):
+    url_in_db = db_find_short_url(short_url)
+    if url_in_db == None:
+        return send_bad_short_url_err()
+    else:
+        return redirect(url_in_db.original_url, 302)
 
 # Note: in "http://" it gets confused after the "//" so it returns two variables
 @urlapp.route('/new/<url_protocol>//<url_parts>')
@@ -79,6 +96,6 @@ def handle_url(url_protocol, url_parts):
             # return existing url from db
             json = {
                 'original_url': full_url,
-                'short_url': url_in_db.short_url_id
+                'short_url': str(request.url_root) + str(url_in_db.short_url_id)
                 }
         return jsonify(json)
