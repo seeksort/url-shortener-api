@@ -1,5 +1,5 @@
 from app import urlapp, db
-from flask import jsonify, request, redirect
+from flask import jsonify, request, redirect, render_template
 from app.models import UrlMap
 import re
 
@@ -57,7 +57,7 @@ def bad_url(error):
 
 @urlapp.route('/')
 def root():
-    return "Welcome to url shortener!"
+    return render_template('index.html')
 
 @urlapp.route('/<short_url>')
 def handle_short_url(short_url):

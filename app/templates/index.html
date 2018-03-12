@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>URL Shortener API</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+  <style type="text/css">
+    body {
+      font-family: 'Roboto Condensed', sans-serif;
+      text-align: center;
+      background-color: #b8e0cf;
+      color: #442252;
+    }
+
+    .main {
+      width: 100%;
+    }
+
+    .content {
+      width: 70%;
+      margin: 0 auto;
+      text-align: left;
+      word-wrap: normal;
+    }
+
+    code {
+      background-color: #ebdde9;
+      word-wrap: break-word;
+      white-space: none;
+    }
+
+    .codeblock {
+      display: block;
+      padding: 12px;
+      text-align: left;
+      white-space: none;
+      word-wrap: break-word;
+      background: #ebdde9;
+    }
+
+    @media (min-width: 768px) {
+      .content {
+        width: 80%;
+        margin: 0 auto;
+        text-align: left;
+      }
+
+      .codeblock {
+        white-space: pre;
+        word-wrap: normal;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="main">
+    <div class="content">
+      <h1>URL Shortener API</h1>
+      <p>This microservice will shorten URLs for you when passed into this site's URL. Then, it will redirect you to your original URL if you pass in the shortened URL code into this site's URL.</p>
+        <h2>Creating a Short URL</h2>
+          <p>
+             In your search bar, add your URL to be shortened after <code>/new/</code>. Example:
+          </p>
+          <code>https://REPLACE_URL.herokuapp.com/new/https://www.freecodecamp.org/</code>
+          <h3>Output</h3>
+            <code class=codeblock>{<br>  "original_url": "https://www.freecodecamp.org",<br>  "short_url": "https://REPLACE_URL.herokuapp.com/1001"<br>}</code>
+        <h2>Using a Short URL</h2>
+          <p>
+            In your search bar, add your new shortened URL to be shortened after
+            <code>/</code>. Example:
+          </p>
+          <code>https://REPLACE_URL.herokuapp.com/1001</code>
+          <h3>Redirects you to</h3>
+          <code>https://www.freecodecamp.org</code>
+      <h1>\o/</h1>
+    </div>
+  </div>
+</body>
+
+</html>
