@@ -1,5 +1,6 @@
-from app import urlapp
-from flask import jsonify, request
+from app import urlapp, db
+from flask import jsonify
+from app.models import UrlMap
 import re
 
 def send_err():
@@ -23,11 +24,19 @@ def validate_url(url_protocol, url_parts):
             return False
 
 
-def db_find_url(url):
-    pass
+def db_find_url(url_parts):
+    return db.session.query(UrlMap).filter(UrlMap.url_no_protocol == url_parts).first()
 
 def shorten_url(url):
-    pass
+    # lookup last in db
+    last_url = UrlMap.query.order_by(UrlMap.id.desc()).first()
+    print(last_url)
+    # add +1 to url id if exist in db
+    if last_url == None:
+        short_url = 1000
+    else:
+        short_url = last_url.short_url_id + 1
+    return short_url
 
 '''
 ============ Routes ============
@@ -39,7 +48,6 @@ def bad_url(error):
 
 @urlapp.route('/')
 def root():
-    print('root')
     return "Welcome to url shortener!"
 
 # Note: in "http://" it gets confused after the "//" so it returns two variables
@@ -50,10 +58,27 @@ def handle_url(url_protocol, url_parts):
         return send_err()
     else:
         print('validated!')
-        # new_url = shorten_url(url_protocol)
-        json = {
-            'validated': True
-            # 'original_url': url_protocol,
-            # 'short_url': new_url
-            }
+        full_url = url_protocol + '//' + url_parts
+        # url_in_db = UrlMap.find_url(url_parts)
+        url_in_db = db_find_url(url_parts)
+        print('url_in_db')
+        print(url_in_db)
+        if url_in_db == None:
+            # create new url
+            short_url = shorten_url(url_parts)
+            url = UrlMap(original_url=full_url, url_no_protocol=url_parts, short_url_id=short_url)
+            # add url to db
+            db.session.add(url)
+            db.session.commit()
+            # compose url to return w/ new shortened_url
+            json = {
+                'original_url': full_url,
+                'short_url': short_url
+                }
+        else:
+            # return existing url from db
+            json = {
+                'original_url': full_url,
+                'short_url': url_in_db.short_url_id
+                }
         return jsonify(json)
